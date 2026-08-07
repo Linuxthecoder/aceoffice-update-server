@@ -30,7 +30,7 @@ RELEASE_JSON="$(curl -fsSL "${AUTH[@]+"${AUTH[@]}"}" "https://api.github.com/rep
 ASSETS="$(
   printf '%s\n' "$RELEASE_JSON" \
     | grep -o '"browser_download_url": *"[^"]*"' \
-    | sed 's/^[^"]*" *: *"//; s/"$//'
+    | sed 's/^[^:]*:[[:space:]]*"//; s/"$//'
 )"
 
 if [[ -z "$ASSETS" ]]; then
