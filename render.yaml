@@ -24,6 +24,6 @@ services:
     staticPublishPath: public
     envVars:
       - key: GITHUB_REPO # owner/repo that holds your release artifacts (change if you publish installers elsewhere)
-        value: LLinuxthecoder/aceoffice-update-server
+        value: Linuxthecoder/aceoffice-update-server
       - key: GITHUB_TOKEN # optional; only needed for a PRIVATE release repo
         sync: false
