@@ -47,5 +47,20 @@ while IFS= read -r url; do
   curl -fsSL --location-trusted "${AUTH[@]+"${AUTH[@]}"}" -o "public/${name}" "$url"
 done <<< "$ASSETS"
 
+# GitHub stores uploaded assets with spaces replaced by dots
+# (e.g. "AceOffice.Setup.0.4.0.exe"). latest.yml's "path:" keeps the real
+# spaced filename that the app will request, so rename the installer to match.
+INSTALLER_PATH="$(grep -E '^path:' public/latest.yml | sed 's/^path:[[:space:]]*//; s/^"//; s/"$//' || true)"
+if [[ -n "$INSTALLER_PATH" ]]; then
+  for f in public/*.exe; do
+    [[ -e "$f" ]] || continue
+    if [[ "$(basename "$f")" != "$INSTALLER_PATH" ]]; then
+      echo "Renaming $(basename "$f") -> ${INSTALLER_PATH}"
+      mv -f "$f" "public/${INSTALLER_PATH}"
+    fi
+    break
+  done
+fi
+
 echo "Serving:"
 ls -lh public/
