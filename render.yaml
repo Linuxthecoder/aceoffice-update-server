@@ -1,0 +1,29 @@
+# Render blueprint for the AceOffice auto-update server.
+#
+# How it works:
+#   1. You build the app with ACEOFFICE_UPDATE_URL set to this site's URL.
+#      (apps/shell/electron-builder.cjs bakes it into the packaged app.)
+#   2. You upload the built installer + latest.yml / latest-mac.yml to a
+#      GitHub Release (scripts/publish.ps1 does this for you).
+#   3. On every deploy this build command downloads the latest release's
+#      assets into public/ and Render serves them over HTTPS.
+#   4. Installed apps check this URL, see a newer version in latest.yml,
+#      download the installer, and update.
+#
+# To deploy: push this folder to a GitHub repo, then in Render:
+#   New +  >  Blueprint  >  select your repo.
+# Edit the two TODO placeholders first (repo URL and GITHUB_REPO).
+
+services:
+  - type: web
+    name: aceoffice-updates
+    runtime: static
+    repo: https://github.com/Linuxthecoder/aceoffice-update-server # TODO: your repo URL
+    branch: main
+    buildCommand: bash ./scripts/fetch-artifacts.sh
+    staticPublishPath: public
+    envVars:
+      - key: GITHUB_REPO # owner/repo that holds your release artifacts (change if you publish installers elsewhere)
+        value: LLinuxthecoder/aceoffice-update-server
+      - key: GITHUB_TOKEN # optional; only needed for a PRIVATE release repo
+        sync: false
