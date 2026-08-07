@@ -1,29 +1,29 @@
 <#
-Publishes a built AceOffice release to GitHub Releases and triggers a Render
-deploy so the update server serves the new files.
+Publishes a built AceOffice release to GitHub Releases and triggers a Vercel
+deploy hook so the update server serves the new files.
 
 Prereqs:
   - GitHub CLI (gh) installed and authenticated:  gh auth login
   - Built artifacts exist in apps/shell/release. Build with your update URL:
 
-        $env:ACEOFFICE_UPDATE_URL = "https://your-site.onrender.com"
+        $env:ACEOFFICE_UPDATE_URL = "https://aceoffice-updates.vercel.app"
         npm run dist:win          # from the genoffice repo root
 
 Usage:
   .\scripts\publish.ps1 -Repo "your-username/aceoffice-releases"
 
   Optional:
-    -Tag "0.5.0"                defaults to the version from latest.yml
-    -RenderServiceId "srv-xxx"  auto-trigger a Render deploy after upload
-    -RenderApiKey "rnd_xxx"     Render API key (render.com/docs/api)
+    -Tag "0.5.0"                 defaults to the version from latest.yml
+    -VercelDeployHook "https://..."  auto-trigger a Vercel rebuild after upload
+                                     (get the URL from Vercel dashboard:
+                                      Settings > Git > Deploy Hooks)
 #>
 
 param(
     [string]$ReleaseDir = "$PSScriptRoot\..\..\genoffice\apps\shell\release",
     [string]$Repo = "",
     [string]$Tag = "",
-    [string]$RenderServiceId = "",
-    [string]$RenderApiKey = ""
+    [string]$VercelDeployHook = ""
 )
 
 $ErrorActionPreference = 'Stop'
@@ -71,14 +71,10 @@ else {
 }
 if ($LASTEXITCODE -ne 0) { Write-Error "GitHub release step failed." }
 
-if ($RenderServiceId) {
-    if (-not $RenderApiKey) { Write-Error "-RenderApiKey is required with -RenderServiceId." }
-    Write-Host "Triggering Render deploy..."
-    $headers = @{ Authorization = "Bearer $RenderApiKey" }
-    $body = '{"clearCache":"do_not_clear"}'
-    Invoke-RestMethod -Method Post -Uri "https://api.render.com/v1/services/$RenderServiceId/deploys" `
-        -Headers $headers -ContentType 'application/json' -Body $body | Out-Null
-    Write-Host "Render deploy triggered."
+if ($VercelDeployHook) {
+    Write-Host "Triggering Vercel deploy hook..."
+    Invoke-RestMethod -Method Post -Uri $VercelDeployHook | Out-Null
+    Write-Host "Vercel deploy triggered."
 }
 
-Write-Host "Done. The update feed is live once Render finishes deploying." -ForegroundColor Green
+Write-Host "Done. The update feed is live once Vercel finishes building." -ForegroundColor Green

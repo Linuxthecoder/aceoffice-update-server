@@ -1,0 +1,14 @@
+{
+  "buildCommand": "bash ./scripts/fetch-artifacts.sh",
+  "outputDirectory": "public",
+  "headers": [
+    {
+      "source": "/latest.yml",
+      "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+    },
+    {
+      "source": "/latest-mac.yml",
+      "headers": [{ "key": "Cache-Control", "value": "no-cache" }]
+    }
+  ]
+}

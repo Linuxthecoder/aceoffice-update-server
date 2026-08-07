@@ -1,5 +1,10 @@
 # Render blueprint for the AceOffice auto-update server.
 #
+# NOTE: This project now deploys on Vercel (see vercel.json). This file is
+# kept as a reference and only used if you ever want to deploy to Render
+# instead. For Vercel: connect the repo in the Vercel dashboard and set the
+# GITHUB_REPO environment variable there.
+#
 # How it works:
 #   1. You build the app with ACEOFFICE_UPDATE_URL set to this site's URL.
 #      (apps/shell/electron-builder.cjs bakes it into the packaged app.)
