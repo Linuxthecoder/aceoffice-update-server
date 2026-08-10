@@ -60,6 +60,10 @@ if [[ -n "$INSTALLER_PATH" ]]; then
     fi
     break
   done
+  # Stable download URL for the website: always serves the newest installer
+  # so the "Download" button never needs editing after a release.
+  echo "Copying ${INSTALLER_PATH} -> AceOffice-Setup-latest.exe"
+  cp -f "public/${INSTALLER_PATH}" "public/AceOffice-Setup-latest.exe"
 fi
 
 echo "Serving:"
